@@ -18,6 +18,7 @@ if __name__ == '__main__':
                                partial(path.join, get_python_lib(prefix=''), package_name, *paths))
 
     _data_join, _data_install_dir = to_funcs('_data')
+    _centos_join, _centos_install_dir = to_funcs('_centos')
 
     setup(
         name=package_name,
@@ -28,6 +29,7 @@ if __name__ == '__main__':
         package_dir={package_name: package_name},
         install_requires=['fabric'],
         data_files=[
-            (_data_install_dir(), map(_data_join, listdir(_data_join())))
+            (_data_install_dir(), map(_data_join, listdir(_data_join()))),
+            (_centos_install_dir(), map(_centos_join, listdir(_centos_join())))
         ]
     )
