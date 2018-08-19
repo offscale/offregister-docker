@@ -17,16 +17,15 @@ def install_docker0(*args, **kwargs):
 
 
 def install_docker_user1(*args, **kwargs):
-    if run('getent group docker').succeeded:
+    user = run('echo $USER', quiet=True)
+    if run('getent group docker', warn_only=True).failed:
+        sudo('groupadd docker')
+    elif run('id -nG "{user}" | grep -qw docker'.format(user=user), warn_only=True, quiet=True).failed:
+        sudo('usermod -aG docker {user}'.format(user=user))
+    else:
         return 'Docker group already exists'
 
-    sudo('groupadd docker')
-    sudo('usermod -aG docker $USER')
-    sudo('usermod -aG docker {user}'.format(user=run('echo $USER', quiet=True)))
-
     raise NotImplementedError('You must restart machine for nonroot user to run Docker')
-
-    # return 'Docker group created'
 
 
 def test_docker2(*args, **kwargs):
