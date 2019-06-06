@@ -30,3 +30,16 @@ def install_docker_user1(*args, **kwargs):
 
 def test_docker2(*args, **kwargs):
     return run('docker run hello-world')
+
+
+def install_docker_compose3(*args, **kwargs):
+    version = '1.22.0'
+
+    if cmd_avail('docker-compose'):
+        return 'already installed'
+
+    executable = '/usr/local/bin/docker-compose'
+
+    sudo('curl -L https://github.com/docker/compose/releases/download/{version}/docker-compose-$(uname -s)-$(uname -m)'
+         ' -o {executable}'.format(executable=executable, version=version))
+    sudo('chmod +x {executable}'.format(executable=executable))
