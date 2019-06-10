@@ -8,10 +8,14 @@ def install_docker0(*args, **kwargs):
     if cmd_avail('docker'):
         return 'Docker is already installed'
 
-    apt_depends('apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common')
-    sudo('curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -')
-    sudo('add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"')
-    apt_depends('docker-ce')
+    apt_depends('apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common')
+    sudo('curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -')
+    sudo('apt-key fingerprint 0EBFCD88')
+    distro = run('lsb_release -cs')
+    sudo('add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu {distro} stable"'.format(
+        distro=distro
+    ))
+    apt_depends('docker-ce', 'docker-ce-cli', 'containerd.io')
     sudo('systemctl enable docker')
     return 'Docker is now installed and will run at boot'
 
@@ -33,7 +37,7 @@ def test_docker2(*args, **kwargs):
 
 
 def install_docker_compose3(*args, **kwargs):
-    version = '1.22.0'
+    version = '1.25.0-rc1'
 
     if cmd_avail('docker-compose'):
         return 'already installed'
