@@ -37,7 +37,7 @@ def test_docker2(*args, **kwargs):
 
 
 def install_docker_compose3(*args, **kwargs):
-    version = '1.25.0-rc1'
+    version = '1.25.0-rc2'
 
     if cmd_avail('docker-compose'):
         return 'already installed'
