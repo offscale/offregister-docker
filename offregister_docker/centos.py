@@ -1,8 +1,12 @@
+from __future__ import print_function
 from functools import partial
 
 from os import path
-from sys import modules
+from sys import modules, version
 from pkg_resources import resource_filename
+
+if version[0] == "2":
+    from itertools import imap as map
 
 from fabric.contrib.files import append
 from fabric.operations import sudo
@@ -23,9 +27,9 @@ def install_docker0(*args, **kwargs):
 
     for mnt in sudo('mount | grep "^/dev"'):
         if "xfs" not in mnt and len(mnt) > 1:
-            print(("mnt =", mnt))
+            print("mnt =", mnt)
             dev = mnt[: mnt.find(" on")]
-            print(("dev =", dev))
+            print("dev =", dev)
             sudo("mkfs -t xfs -n ftype=1 {dev}".format(dev=dev))
 
     if sudo("lsmod | grep overlay", warn_only=True).failed:
