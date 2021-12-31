@@ -1,8 +1,9 @@
 from __future__ import print_function
-from functools import partial
 
+from functools import partial
 from os import path
 from sys import modules, version
+
 from pkg_resources import resource_filename
 
 if version[0] == "2":
@@ -10,7 +11,6 @@ if version[0] == "2":
 
 from fabric.contrib.files import append
 from fabric.operations import sudo
-
 from offregister_fab_utils.fs import cmd_avail
 
 
