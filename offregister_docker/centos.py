@@ -9,32 +9,31 @@ from pkg_resources import resource_filename
 if version[0] == "2":
     from itertools import imap as map
 
-from fabric.contrib.files import append
-from fabric.operations import sudo
 from offregister_fab_utils.fs import cmd_avail
+from patchwork.files import append
 
 
 def install_docker0(*args, **kwargs):
-    if cmd_avail("docker"):
+    if cmd_avail(c, "docker"):
         return
 
-    kernel_version = sudo("uname -r", quiet=True)
+    kernel_version = c.sudo("uname -r", hide=True).stdout
     if tuple(map(int, kernel_version[: kernel_version.find(".", 2)].split("."))) < (
         3,
         10,
     ):
         raise NotImplementedError("Docker for older versions of the Linux kernel")
 
-    for mnt in sudo('mount | grep "^/dev"'):
+    for mnt in c.sudo('mount | grep "^/dev"'):
         if "xfs" not in mnt and len(mnt) > 1:
             print("mnt =", mnt)
             dev = mnt[: mnt.find(" on")]
             print("dev =", dev)
-            sudo("mkfs -t xfs -n ftype=1 {dev}".format(dev=dev))
+            c.sudo("mkfs -t xfs -n ftype=1 {dev}".format(dev=dev))
 
-    if sudo("lsmod | grep overlay", warn_only=True).failed:
+    if c.sudo("lsmod | grep overlay", warn=True).exited != 0:
         append("/etc/modules-load.d/overlay.conf", "overlay", use_sudo=True)
-        sudo("reboot")
+        c.sudo("reboot")
         return "rebooting: RERUN"
 
     centos_join = partial(
@@ -51,10 +50,10 @@ def install_docker0(*args, **kwargs):
 
     with open(centos_join("override.conf")) as f:
         p = "/etc/systemd/system/docker.service.d"
-        sudo("mkdir -p {p}".format(p=p))
+        c.sudo("mkdir -p {p}".format(p=p))
         append("{p}/override.conf".format(p=p), f.read(), use_sudo=True)
-    sudo("yum install -y docker-engine-1.13.1 docker-engine-selinux-1.13.1")
-    sudo("systemctl start docker")
-    sudo("systemctl enable docker")
+    c.sudo("yum install -y docker-engine-1.13.1 docker-engine-selinux-1.13.1")
+    c.sudo("systemctl start docker")
+    c.sudo("systemctl enable docker")
 
-    return sudo("docker ps")
+    return c.sudo("docker ps")
