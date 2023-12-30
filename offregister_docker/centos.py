@@ -13,7 +13,7 @@ from offregister_fab_utils.fs import cmd_avail
 from patchwork.files import append
 
 
-def install_docker0(*args, **kwargs):
+def install_docker0(c, *args, **kwargs):
     if cmd_avail(c, "docker"):
         return
 

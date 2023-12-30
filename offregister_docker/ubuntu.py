@@ -2,7 +2,7 @@ from offregister_fab_utils.apt import apt_depends
 from offregister_fab_utils.fs import cmd_avail
 
 
-def install_docker0(*args, **kwargs):
+def install_docker0(c, *args, **kwargs):
     if cmd_avail(c, "docker"):
         return "Docker is already installed"
 
@@ -29,7 +29,7 @@ def install_docker0(*args, **kwargs):
     return "Docker is now installed and will run at boot"
 
 
-def install_docker_user1(*args, **kwargs):
+def install_docker_user1(c, *args, **kwargs):
     user = c.run("echo $USER", hide=True).stdout.rstrip()
     if c.run("getent group docker", warn=True).exited != 0:
         c.sudo("groupadd docker")
@@ -48,11 +48,11 @@ def install_docker_user1(*args, **kwargs):
     raise NotImplementedError("You must restart machine for nonroot user to run Docker")
 
 
-def test_docker2(*args, **kwargs):
+def test_docker2(c, *args, **kwargs):
     return c.run("docker run hello-world")
 
 
-def install_docker_compose3(*args, **kwargs):
+def install_docker_compose3(c, *args, **kwargs):
     version = "1.27.3"
 
     if cmd_avail(c, "docker-compose"):
