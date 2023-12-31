@@ -8,7 +8,6 @@ offregister_docker
 
 This package follows the offregister library specification for Docker.
 
-
 ## Install package
 
     pip install .
